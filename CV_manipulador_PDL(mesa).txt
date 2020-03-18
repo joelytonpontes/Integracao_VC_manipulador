@@ -1,0 +1,128 @@
+PROGRAM JOE_TCC_PRINCIPALM
+
+VAR
+  
+  X, Y, Z, A, E, R, B, SOMA : INTEGER
+
+  CENTER : POSITION EXPORTED FROM PEDROSET GLOBAL
+  
+ROUTINE ToolFrame(ai_tool, ai_frame, ai_arm : INTEGER()) EXPORTED FROM tt_tool GLOBAL   --CHAMANDO FUNÇAO TOOLFRAME
+  
+  -- >>>>>>>>>>>>>>>>>>>>>>>>>>>>MAIN<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  
+BEGIN
+  
+  ToolFrame(1, 1, 1)
+  $DOUT[312]:=ON
+  A := 0 --PRÉ-DEFINIDO E ESTÁTICO
+  E := 39 --PRÉ-DEFINIDO E ESTÁTICO
+  R := 180
+  X := -85
+  Y := 400
+  Z := 9 -- MUDA PELO PDL
+  SOMA:= 750
+  $DOUT[1]:=OFF
+  $DOUT[2]:=ON
+  CENTER := POS(X, Y, Z, A, E, R, 'W')
+  MOVE JOINT TO CENTER
+  WHILE TRUE DO
+    $DOUT[312]:=ON
+    WAIT FOR $DIN[280]
+    
+    X := $FMI[5]
+    Y := $FMI[6]
+    A := $FMI[7]
+    IF $DIN[288] THEN
+        DELAY 1000
+        B:=(-1)*A 
+        A:=B
+    ELSE
+    ENDIF
+      
+
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    $DOUT[2]:=OFF --ABRIR
+    $DOUT[1]:=ON
+    DELAY 500
+    Z :=63 
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    $DOUT[1]:=OFF -- FECHAR
+    $DOUT[2]:=ON
+    DELAY 500
+    Z:= -10
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    MOVE LINEAR TO POS(35, SOMA ,-10,0,E,R,'W')-- PONTO DE SOLTAR
+    MOVE LINEAR TO POS(35, SOMA ,62,0,E,R,'W')-- PONTO DE SOLTAR
+    $DOUT[2]:=OFF
+    $DOUT[1]:=ON
+    DELAY 500
+    MOVE LINEAR TO POS(35, SOMA ,-10,0,E,R,'W')-- PONTO DE SOLTAR
+    SOMA:= SOMA - 65
+    MOVE LINEAR TO CENTER
+    $DOUT[312]:=OFF
+    DELAY 500
+  ENDWHILE
+  
+END JOE_TCC_PRINCIPALM
+
+
+
+
+PROGRAM JOE_TCC_CALIBRACAO
+
+VAR
+  
+  X, Y, Z, A, E, R, B : INTEGER
+
+  CENTER : POSITION EXPORTED FROM PEDROSET GLOBAL
+  
+ROUTINE ToolFrame(ai_tool, ai_frame, ai_arm : INTEGER()) EXPORTED FROM tt_tool GLOBAL   --CHAMANDO FUNÇAO TOOLFRAME
+  
+  -- >>>>>>>>>>>>>>>>>>>>>>>>>>>>MAIN<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  
+BEGIN
+  
+  ToolFrame(1, 1, 1)
+  A := 0 --PRÉ-DEFINIDO E ESTÁTICO
+  E := 53 --PRÉ-DEFINIDO E ESTÁTICO
+  R := 180
+  X := -85
+  Y := 400
+  Z := -40 -- MUDA PELO PDL
+  $DOUT[1]:=OFF
+  $DOUT[2]:=ON
+  CENTER := POS(X, Y, Z, A, E, R, 'W')
+  MOVE JOINT TO CENTER
+  WHILE TRUE DO
+    
+    WAIT FOR $DIN[280]
+    X := $FMI[5]
+    Y := $FMI[6]
+    A := $FMI[7]
+    IF $DIN[288] THEN
+        DELAY 1000
+        B:=(-1)*A 
+        A:=B
+    ELSE
+    ENDIF
+      
+
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    $DOUT[2]:=OFF --ABRIR
+    $DOUT[1]:=ON
+    DELAY 500
+    Z :=13
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    $DOUT[1]:=OFF -- FECHAR
+    $DOUT[2]:=ON
+    DELAY 500
+    Z:=-40
+    MOVE LINEAR TO POS(X, Y, Z, A, E, R, 'W')
+    MOVE LINEAR TO POS(-85, 400 ,-40,A,E,R,'W')
+    $DOUT[2]:=OFF
+    $DOUT[1]:=ON
+    DELAY 500
+    MOVE LINEAR TO CENTER
+  ENDWHILE
+  
+END JOE_TCC_CALIBRACAO
